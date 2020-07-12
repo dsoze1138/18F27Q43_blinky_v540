@@ -109,17 +109,17 @@ Start:
 ;  With a 64MHz oscillator the range and
 ;  resolution of this delay function is:
 ;
-;    Minimum:    1.5625 microseconds
-;    Maximum:  268.4354575   seconds
-;    Resolution: 0.0625 microseconds
+;    Minimum:    1.625   microseconds
+;    Maximum:  268.4354575625 seconds
+;    Resolution: 0.0625  microseconds
 ;
-Delay_Plus_25_Cycles:
-        movlw   LOW HIGHWORD(Delay_Plus_25_Cycles_Nops)
+Delay_Plus_26_Cycles:
+        movlw   LOW HIGHWORD(Delay_Plus_26_Cycles_Nops)
         movwf   PCLATU,c
-        movlw   HIGH(Delay_Plus_25_Cycles_Nops)
+        movlw   HIGH(Delay_Plus_26_Cycles_Nops)
         movwf   PCLATH,c
 
-Delay_Plus_25_Cycles_Loop:
+Delay_Plus_26_Cycles_Loop:
         movlw   -12
         addwf   BANKMASK(DelayCycles)+0,f,c
         movlw   -1
@@ -130,15 +130,15 @@ Delay_Plus_25_Cycles_Loop:
         btfss   STATUS,0,c
         addwf   BANKMASK(DelayCycles)+3,f,c
         btfsc   STATUS,0,c
-        bra     Delay_Plus_25_Cycles_Loop
+        bra     Delay_Plus_26_Cycles_Loop
 
         comf    BANKMASK(DelayCycles)+0,f,c
         rlcf    BANKMASK(DelayCycles)+0,w,c
-        addlw   LOW(Delay_Plus_25_Cycles_Nops)
+        addlw   LOW(Delay_Plus_26_Cycles_Nops)
         btfsc   STATUS,0,c
         incf    PCLATH,f,c
         movwf   PCL,c       ; MPLABX v5.40 is simulator broken, this is a 2 cycle instruction.
-Delay_Plus_25_Cycles_Nops:
+Delay_Plus_26_Cycles_Nops:
         nop
         nop
         nop
@@ -161,7 +161,7 @@ main:
     banksel ANSELA
     bcf     BANKMASK(ANSELA),0,b
 ;
-#define CYCLES_IN_HALF_SECOND ((FCY/2)-25)
+#define CYCLES_IN_HALF_SECOND ((FCY/2)-26)
 ;
 AppLoop:
     movlw   CYCLES_IN_HALF_SECOND >> 24
@@ -172,7 +172,7 @@ AppLoop:
     movwf   BANKMASK(DelayCycles)+1,c
     movlw   CYCLES_IN_HALF_SECOND 
     movwf   BANKMASK(DelayCycles),c
-    call    Delay_Plus_25_Cycles
+    call    Delay_Plus_26_Cycles
     btg     LATA,0,c
     goto    AppLoop
 ;
