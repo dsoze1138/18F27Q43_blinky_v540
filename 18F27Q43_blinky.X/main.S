@@ -94,19 +94,30 @@ Start:
     goto    main
 ;
 ; Cycle accurate parametric delay
-; 
+;
+; Input:
+;   DelayCycles (DWORD)
+;
+; Output:
+;   none
+;
+; Modified:
+;   DelayCycles (DWORD)
+;
 ; Notes: 
 ;
 ;  With a 64MHz oscillator the range and
 ;  resolution of this delay function is:
 ;
-;    Minimum:    x.xx microseconds
-;    Maximum: xxxx.xxxxxxx seconds
-;    Resolution: 0.xx microseconds
+;    Minimum:    1.5625 microseconds
+;    Maximum:  268.4354575   seconds
+;    Resolution: 0.0625 microseconds
+;
 Delay_Plus_25_Cycles:
-        clrf  PCLATU,c
-        movlw HIGH(Delay_Plus_25_Cycles_Nops)
-        movwf PCLATH,c
+        movlw   LOW HIGHWORD(Delay_Plus_25_Cycles_Nops)
+        movwf   PCLATU,c
+        movlw   HIGH(Delay_Plus_25_Cycles_Nops)
+        movwf   PCLATH,c
 
 Delay_Plus_25_Cycles_Loop:
         movlw   -12
@@ -126,7 +137,7 @@ Delay_Plus_25_Cycles_Loop:
         addlw   LOW(Delay_Plus_25_Cycles_Nops)
         btfsc   STATUS,0,c
         incf    PCLATH,f,c
-        movwf   PCL,c       ; MPLABX v5.40 simulator broken, this is a 2 cycle instruction.
+        movwf   PCL,c       ; MPLABX v5.40 is simulator broken, this is a 2 cycle instruction.
 Delay_Plus_25_Cycles_Nops:
         nop
         nop
